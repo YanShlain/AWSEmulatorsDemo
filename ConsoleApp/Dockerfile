@@ -4,7 +4,7 @@ WORKDIR /app
 FROM microsoft/dotnet:2.0-sdk AS build
 WORKDIR /src
 COPY *.sln ./
-COPY ConsoleApp/ConsoleApp.csproj ConsoleApp/
+COPY ConsoleApp/AwsEmulators.Demo.ConsoleApp.csproj ConsoleApp/
 RUN dotnet restore
 COPY . .
 WORKDIR /src/ConsoleApp
@@ -16,4 +16,4 @@ RUN dotnet publish -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "ConsoleApp.dll"]
+ENTRYPOINT ["dotnet", "AwsEmulators.Demo.ConsoleApp.dll"]
