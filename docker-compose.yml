@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  consoleapp3:
-    image: consoleapp3
+  consoleapp:
+    image: consoleapp
     build:
       context: .
-      dockerfile: ConsoleApp3/Dockerfile
+      dockerfile: ConsoleApp/Dockerfile
