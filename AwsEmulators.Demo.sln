@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{56326472-18EE-4856-A6BA-BC3B29ADAAA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsEmulators.Demo.ConsoleApp", "ConsoleApp\AwsEmulators.Demo.ConsoleApp.csproj", "{56326472-18EE-4856-A6BA-BC3B29ADAAA1}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0F23C60F-EE7B-4812-BDE9-BCA8CA2BAA8C}"
 EndProject

@@ -1,6 +1,4 @@
-﻿using Amazon;
-using Amazon.Runtime;
-using Amazon.SQS;
+﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 using System;
 using System.Collections.Generic;
@@ -11,61 +9,6 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp3
 {
-    internal class GoAws
-    {
-        public const string ServiceUrl = "http://localhost:4100";
-        public const string QueueUrl = "http://localhost:4576/queue/";
-
-        public static IAmazonSQS GetSqsClient()
-        {
-            return GetAmazonClient(ServiceUrl);
-        }
-
-        private static IAmazonSQS GetAmazonClient(string serviceUrl)
-        {
-            var clientConfig = new AmazonSQSConfig { ServiceURL = serviceUrl };
-            return new AmazonSQSClient(clientConfig);
-        }
-    }
-
-    internal class LocalStack
-    {
-        public const string ServiceUrl = "http://localhost:4576";
-        public const string QueueUrl = "http://localhost:4576/queue/";
-
-        public static IAmazonSQS GetSqsClient()
-        {
-            return GetAmazonClient(ServiceUrl);
-        }
-
-        private static IAmazonSQS GetAmazonClient(string serviceUrl)
-        {
-            var clientConfig = new AmazonSQSConfig { ServiceURL = serviceUrl };
-            return new AmazonSQSClient(clientConfig);
-        }
-    }
-
-    internal class NativeAwsProvider
-    {
-        public static IAmazonSQS GetSqsClient()
-        {
-            var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY", EnvironmentVariableTarget.User);
-            var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_KEY", EnvironmentVariableTarget.User);
-
-            var sqsClient = GetAmazonClient(awsAccessKey, awsSecretKey, RegionEndpoint.USEast1);
-            return sqsClient;
-        }
-
-        private static AmazonSQSClient GetAmazonClient(string awsAccessKey, string awsSecretKey, RegionEndpoint regionEndpoint)
-        {
-            Console.WriteLine("Creating Client and request");
-
-            var awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-            var amazonSQSClient = new AmazonSQSClient(awsCreds, regionEndpoint);
-
-            return amazonSQSClient;
-        }
-    }
 
     internal enum SqsServiceProviders
     {
@@ -79,20 +22,19 @@ namespace ConsoleApp3
     class Program
     {
         private const string s_QueueName = "local_test_queue1";
+        private const SqsServiceProviders s_EmulatorName = SqsServiceProviders.GoAws;
 
         static async Task Main(string[] args)
         {
             try
             {
-                Console.WriteLine("Queue Test Starting!");
-                IAmazonSQS sqsClient = GetSqsClient(SqsServiceProviders.LocalStack);
+                IAmazonSQS sqsClient = GetSqsClient(s_EmulatorName);
 
                 var queues = await GetQueuesAsync(sqsClient);
                 string queueUrl = queues.FirstOrDefault(queueName => queueName == s_QueueName) ?? await CreateQueueAsync(sqsClient, s_QueueName);
 
                 await SendMessageAsync(sqsClient, queueUrl);
                 await ReadMessagesAsync(sqsClient, queueUrl);
-
             }
             catch (Exception ex)
             {
