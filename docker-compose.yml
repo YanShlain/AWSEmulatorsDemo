@@ -6,3 +6,14 @@ services:
     build:
       context: .
       dockerfile: ConsoleApp/Dockerfile
+    environment:
+      - YANS_AWS_ACCESS_KEY
+      - YANS_AWS_SECRET_KEY
+    volumes:
+      - ./ConsoleApp/Configurations:/Configuration
+  goaws:
+    image: pafortin/goaws
+    ports:
+      - 127.0.0.1:4100:4100
+    volumes:
+     - ./app/conf:/conf

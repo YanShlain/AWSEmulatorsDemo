@@ -1,7 +1,9 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -23,15 +25,30 @@ namespace ConsoleApp3
     {
         private const string s_QueueName = "local_test_queue1";
         private const SqsServiceProviders s_EmulatorName = SqsServiceProviders.GoAws;
+        public static IConfiguration Configuration { get; set; }
 
         static async Task Main(string[] args)
         {
             try
             {
-                IAmazonSQS sqsClient = GetSqsClient(s_EmulatorName);
+                if (Directory.Exists(@"/Configuration"))
+                {
+                    string filePath = Path.Combine(@"/Configuration", "appsettings.json");
+                    if (File.Exists(filePath))
+                    {
+                        var content = File.ReadAllText(filePath);
+                    }
+                }
+                Configuration = ReadConfiguration("/Configuration", "appsettings.json");
+
+                IAmazonSQS sqsClient = GetSqsClient(s_EmulatorName, Configuration);
+
 
                 var queues = await GetQueuesAsync(sqsClient);
                 string queueUrl = queues.FirstOrDefault(queueName => queueName == s_QueueName) ?? await CreateQueueAsync(sqsClient, s_QueueName);
+
+                //TODO: Remove below line.
+                queueUrl = queueUrl.Replace("/:/", "/172.25.39.209:4100/");
 
                 await SendMessageAsync(sqsClient, queueUrl);
                 await ReadMessagesAsync(sqsClient, queueUrl);
@@ -42,13 +59,22 @@ namespace ConsoleApp3
             }
         }
 
+        private static IConfiguration ReadConfiguration(string dirPath, string configurationFileName)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(dirPath)
+                .AddJsonFile(configurationFileName);
+
+            return builder.Build();
+        }
+
         private static async Task<string> CreateQueueAsync(IAmazonSQS sqsClient, string s_QueueName, CancellationToken cancellationToken = default)
         {
             var response = await sqsClient.CreateQueueAsync(s_QueueName, cancellationToken);
             return response.QueueUrl;
         }
 
-        private static IAmazonSQS GetSqsClient(SqsServiceProviders sqsProviderType)
+        private static IAmazonSQS GetSqsClient(SqsServiceProviders sqsProviderType, IConfiguration configuration)
         {
             IAmazonSQS sqsClient = null;
 
@@ -58,7 +84,7 @@ namespace ConsoleApp3
                     sqsClient = NativeAwsProvider.GetSqsClient();
                     break;
                 case SqsServiceProviders.GoAws:
-                    sqsClient = GoAws.GetSqsClient();
+                    sqsClient = new GoAws(configuration).GetSqsClient();
                     break;
                 case SqsServiceProviders.LocalStack:
                     sqsClient = LocalStack.GetSqsClient();

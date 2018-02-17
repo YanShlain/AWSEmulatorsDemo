@@ -1,21 +1,35 @@
 ﻿using Amazon.SQS;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace ConsoleApp3
 {
     internal class GoAws
     {
-        public const string ServiceUrl = "http://localhost:4100";
-        public const string QueueUrl = "http://localhost:4576/queue/";
+        private const string SECTION_NAME = "GoAws";
+        public string ServiceUrl { get; }
+        public string QueueUrl { get; }
 
-        public static IAmazonSQS GetSqsClient()
+        public GoAws(IConfiguration configuration)
+        {
+            var configurationSection = configuration.GetSection(SECTION_NAME);
+            ServiceUrl = configurationSection["ServiceUrl"];
+            QueueUrl = configurationSection["QueueUrl"];
+        }
+
+        public IAmazonSQS GetSqsClient()
         {
             return GetAmazonClient(ServiceUrl);
         }
 
         private static IAmazonSQS GetAmazonClient(string serviceUrl)
         {
+            var awsAccessKey = Environment.GetEnvironmentVariable("YANS_AWS_ACCESS_KEY", EnvironmentVariableTarget.User);
+            var awsSecretKey = Environment.GetEnvironmentVariable("YANS_AWS_SECRET_KEY", EnvironmentVariableTarget.User);
+
             var clientConfig = new AmazonSQSConfig { ServiceURL = serviceUrl };
-            return new AmazonSQSClient(clientConfig);
+            return new AmazonSQSClient(awsAccessKey, awsSecretKey, clientConfig);
         }
+
     }
 }
