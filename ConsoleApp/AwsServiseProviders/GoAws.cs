@@ -30,6 +30,5 @@ namespace ConsoleApp3
             var clientConfig = new AmazonSQSConfig { ServiceURL = serviceUrl };
             return new AmazonSQSClient(awsAccessKey, awsSecretKey, clientConfig);
         }
-
     }
 }

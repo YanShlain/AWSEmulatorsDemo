@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 
 services:
   awsemulators.demo.consoleapp:
@@ -11,9 +11,15 @@ services:
       - YANS_AWS_SECRET_KEY
     volumes:
       - ./ConsoleApp/Configurations:/Configuration
-  goaws:
-    image: pafortin/goaws
-    ports:
-      - 127.0.0.1:4100:4100
-    volumes:
-     - ./app/conf:/conf
+  localstack:
+     extends:
+        file: localstack-compose.yml     
+        service: localstack
+  portainer:
+     extends:
+        file: portainer-compose.yml
+        service: portainer
+#  goaws:
+#     extends:
+#        file: GoAws-compose.yml
+#        service: goaws

@@ -24,7 +24,7 @@ namespace ConsoleApp3
     class Program
     {
         private const string s_QueueName = "local_test_queue1";
-        private const SqsServiceProviders s_EmulatorName = SqsServiceProviders.GoAws;
+        private const SqsServiceProviders s_EmulatorName = SqsServiceProviders.LocalStack;
         public static IConfiguration Configuration { get; set; }
 
         static async Task Main(string[] args)
@@ -87,7 +87,7 @@ namespace ConsoleApp3
                     sqsClient = new GoAws(configuration).GetSqsClient();
                     break;
                 case SqsServiceProviders.LocalStack:
-                    sqsClient = LocalStack.GetSqsClient();
+                    sqsClient = new LocalStack(configuration).GetSqsClient();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(sqsProviderType));
