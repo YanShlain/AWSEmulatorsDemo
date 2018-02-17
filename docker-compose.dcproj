@@ -12,5 +12,8 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include="docker-compose.ci.build.yml" />
+    <None Include="GoAws-compose.yml" />
+    <None Include="LocalStack-compose.yml" />
+    <None Include="Portainer-compose.yml" />
   </ItemGroup>
 </Project>

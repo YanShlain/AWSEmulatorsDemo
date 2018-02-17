@@ -1,0 +1,11 @@
+version: '2'
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: "portainer-app"
+    ports:
+      - 9000:9000
+    command: --templates http://templates/templates.json
+    volumes:
+      - /opt/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
